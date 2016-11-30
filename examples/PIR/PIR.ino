@@ -34,28 +34,32 @@
 */
 /**************************************************************************/
 
-#include <RotaryEncoder.h>
+#include <PIR.h>
+#include <LED.h>
 
-#define PIN_A 2
-#define PIN_B 3
+#define PIR_PIN 2
 
-RotaryEncoder encoder = RotaryEncoder(PIN_A, PIN_B);
+PIR pir = PIR(PIR_PIN);
+LED led = LED(13);
 
 void setup() {
-  encoder.incrementHandler(onIncrement);
-  encoder.decrementHandler(onDecrement);
-  encoder.begin();
+  pir.setMotionTimeout(5);
+  pir.motionHandler(onMotion);
+  pir.motionTimeoutHandler(onMotionTimeout);
+  pir.begin();
   Serial.begin(9600);
 }
 
 void loop() {
-  encoder.read();
+  pir.read();
 }
 
-void onIncrement(RotaryEncoder &source){
-  Serial.println("Increment");
+void onMotion(PIR &source) {
+  Serial.println("motion");
+  led.on();
 }
 
-void onDecrement(RotaryEncoder &source){
-  Serial.println("Decrement");
+void onMotionTimeout(PIR &source) {
+  led.off();
+  Serial.println("motion timeout");
 }
